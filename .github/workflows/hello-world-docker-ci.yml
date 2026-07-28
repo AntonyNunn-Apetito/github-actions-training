@@ -1,0 +1,23 @@
+name: Hello World Docker
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v7
+
+      - name: container action
+        id: container-action
+        uses: ./hello-world-docker-action
+        with:
+          who-to-greet: PERSON
+
+      - name: Output time set in the container
+        run: echo "The time was ${{ steps.container-action.outputs.time }} when the action said hello"
