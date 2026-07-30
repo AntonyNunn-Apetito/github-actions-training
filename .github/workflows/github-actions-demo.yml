@@ -15,9 +15,9 @@ on:
   pull_request:
     branches: [main]
 
-  schedule:
-    - cron: '1 10 * * *'
-    - cron: '15 6 * * 0'
+ # schedule:
+ #   - cron: '1 10 * * *'
+ #   - cron: '15 6 * * 0'
 
 jobs:
   Build:
@@ -25,4 +25,48 @@ jobs:
     steps:
       - name: Event Name
         run: 'echo Event: ${{ github.event_name }}'
+
+  Test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    needs: Build
+    environment: Test
+    steps:
+      - run: echo "Testing..."
+
+  Load-Test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    needs: Build
+    environment: Load-Test
+    steps:
+      - run: |
+          echo "Testing..."
+          sleep 15
+
+  Production:
+    runs-on: ubuntu-latest
+    needs: [Test, Load-Test]
+    environment:
+      name: Production
+      url: https://writeabout.net
+    if: github.event.inputs.environment == 'Production'
+    steps:
+      - run: | 
+          echo "Step 1 deploying..."
+          sleep 5
+      - run: | 
+          echo "Step 2 deploying..."
+          sleep 5
+      - run: | 
+          echo "Step 3 deploying..."
+          sleep 5
+      - run: | 
+          echo "Step 4 deploying..."
+          sleep 5
+      - run: | 
+          echo "Step 5 deploying..."
+          sleep 5
+        
+      
       
